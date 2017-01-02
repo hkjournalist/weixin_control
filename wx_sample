@@ -1,0 +1,215 @@
+<?php
+/**
+ * wechat php test
+ */
+
+//define your token
+define("TOKEN", "weixin");
+$wechatObj = new wechatCallbackapiTest();
+//$wechatObj->valid();//接口验证，初次验证时使用，以后注释掉即可
+$wechatObj->responseMsg();//调用回复消息方法
+class wechatCallbackapiTest
+{
+ public function valid()
+ {
+ $echoStr = $_GET["echostr"];
+
+ //valid signature , option
+ if($this->checkSignature()){
+ header('content-type:text');
+ echo $echoStr;
+ exit;
+ }
+ }
+
+ public function open_file($file_name,$flag){
+  $myfile = fopen($file_name,"w");//open file
+  fwrite($myfile,$flag);//read flag
+  fclose($myfile);
+ }
+
+
+ public function responseMsg()
+ {
+
+
+ //get post data, May be due to the different environments
+ $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+
+ //extract post data
+ if (!empty($postStr)){
+ /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
+  the best way is to check the validity of xml by yourself */
+ libxml_disable_entity_loader(true);
+  $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+ $fromUsername = $postObj->FromUserName;
+ $toUsername = $postObj->ToUserName;
+ $keyword = trim($postObj->Content);
+ $time = time();
+ $msgType = $postObj->MsgType;//消息类型
+ $event = $postObj->Event;//时间类型，subscribe（订阅）、unsubscribe（取消订阅）
+ $textTpl = "<xml>
+  <ToUserName><![CDATA[%s]]></ToUserName>
+  <FromUserName><![CDATA[%s]]></FromUserName>
+  <CreateTime>%s</CreateTime>
+  <MsgType><![CDATA[%s]]></MsgType>
+  <Content><![CDATA[%s]]></Content>
+  <FuncFlag>0</FuncFlag>
+  </xml>";
+
+
+ switch($msgType){//msgType
+  case "event":
+  if($event=="subscribe"){
+  $contentStr = "Hi,欢迎来到瓅瓅家!"."\n"."回复数字'1',下载电影."."\n"."回复数字'2',播放音乐."."\n"."回复数字'3',设置闹钟"."\n"."回复数字'4',旅行出差";
+  }
+  break;
+  case "text":
+  $filename = $fromUsername.".txt";//准备建立txt存储回答状态
+  //$this->open_file($filename,"movie");
+  if(file_exists($filename))
+  {
+  $myfile = fopen($filename,"r");//open file
+  $flag = fread($myfile,filesize($filename));//read flag
+  fclose($myfile);
+  }
+  else{$flag = "menue"."\n";}
+  switch($flag){//flag
+  case "menue"."\n":
+  switch($keyword){//menue keyword
+  case "1":
+  $contentStr = "请输入类型："."\n"."1.电影下载\n"."2.查看下载列表\n"."3.查看已下载电影";
+  $this->open_file($filename,"movie"."\n");//write movie to myfile
+  break;
+  case "2":
+  $contentStr = "音乐播放:"."\n"."1.本地音乐播放"."\n"."2.在线音乐播放";
+  $this->open_file($filename,"music"."\n");//write music to myfile
+  break;
+  case "3":
+  $contentStr = "设置闹钟:"."\n"."1.选择铃声"."\n"."2.设置时间"."\n"."3.设置闹钟类型";
+  $this->open_file($filename,"clock"."\n");//write clock to myfile
+  break;
+  case "4":
+  $contentStr = "旅行出差:"."\n"."1.查看机票"."\n"."2.查看火车票"."\n"."3.查看旅馆";
+  $this->open_file($filename,"tour"."\n");//write tour to myfile
+  break;
+  default:
+  $this->open_file($filename,"menue"."\n");
+  $contentStr = "Hi,欢迎来到瓅瓅家!"."\n"."回复数字'1',下载电影."."\n"."回复数字'2',播放音乐."."\n"."回复数字'3',设置闹钟"."\n"."回复数字'4',旅行出差";
+ }//menue keyword
+  break;
+
+  case "movie"."\n":
+  switch($keyword){
+  case "1":
+  $contentStr = "此处调用开始对".$keyword."进行搜索，若找到则开始下载";
+  break;
+
+  case "2":
+  $contentStr = "输出电影库列表";
+  break;
+
+  case "3":
+  $contentStr = "输出正在进行的下载进程";
+  break;
+
+  default:$contentStr = "movie error";
+  }
+  $this->open_file($filename,"menue"."\n");
+  break;
+
+  case "music"."\n":
+  switch($keyword){
+  case "1":
+  $contentStr = "开始对本地音乐列表进行顺序播放";
+  break;
+
+  case "2":
+  $contentStr = "输入音乐名称开始播放在线音乐";
+  break;
+
+  default:
+  $contentStr = "music error";
+  }
+  $this->open_file($filename,"menue"."\n");
+  break;
+
+  case "clock"."\n":
+  switch($keyword){
+  case "1":
+  $contentStr = "输出铃声列表，输入序号选择闹钟音乐";
+  break;
+
+  case "2":
+  $contentStr = "输入时间";
+  break;
+
+  case "3":
+  $contentStr = "输入闹钟类型（每日，单次，除双休日等等）";
+  break;
+  default:$contentStr = "music error";
+  }
+  $this->open_file($filename,"menue"."\n");
+  break;
+
+  case "tour"."\n":
+  switch($keyword){
+  case "1":
+  $contentStr = "根据提示输入地点、时间，返回机票信息";
+  break;
+
+  case "2":
+  $contentStr = "根据提示输入地点、时间，返回火车票信息";
+  break;
+
+  case "3":
+  $contentStr = "根据提示输入地点、时间，返回当地酒店信息";
+  break;
+  default:$contentStr = "tour error";
+  }
+  $this->open_file($filename,"menue"."\n");
+  break;
+
+  default:
+  $contentStr = error.$flag;
+  $this->open_file($filename,"menue"."\n");
+ }//flag
+  break;//case text
+ }
+ $msgType = "text";
+ $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+ echo $resultStr;
+ }else {
+ echo "";
+ exit;
+ }
+ }
+
+ private function checkSignature()
+ {
+ // you must define TOKEN by yourself
+ if (!defined("TOKEN")) {
+ throw new Exception('TOKEN is not defined!');
+ }
+
+ $signature = $_GET["signature"];
+ $timestamp = $_GET["timestamp"];
+ $nonce = $_GET["nonce"];
+
+ $token = TOKEN;
+ $tmpArr = array($token, $timestamp, $nonce);
+ // use SORT_STRING rule
+ sort($tmpArr, SORT_STRING);
+ $tmpStr = implode( $tmpArr );
+ $tmpStr = sha1( $tmpStr );
+
+ if( $tmpStr == $signature ){
+ return true;
+ }else{
+ return false;
+ }
+ }
+}
+
+
+?>
