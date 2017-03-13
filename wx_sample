@@ -22,12 +22,19 @@ class wechatCallbackapiTest
  }
  }
 
+//函数open_file
  public function open_file($file_name,$flag){
   $myfile = fopen($file_name,"w");//open file
   fwrite($myfile,$flag);//read flag
   fclose($myfile);
  }
 
+//向监听的python端口发送消息
+ public function send_msg($msg, $port) {
+    $sock = socket_create(AF_INET, SOCK_DGRAM, 0);
+    socket_sendto($sock, $msg, strlen($msg), 0, "localhost", $port);
+    socket_close($sock);
+ }
 
  public function responseMsg()
  {
@@ -121,11 +128,11 @@ class wechatCallbackapiTest
   case "music"."\n":
   switch($keyword){
   case "1":
-  $contentStr = "开始对本地音乐列表进行顺序播放";
+  $contentStr = "选择播放列表开始顺序播放";
   break;
 
   case "2":
-  $contentStr = "输入音乐名称开始播放在线音乐";
+  $contentStr = "输入音乐名称开始播放音乐";
   break;
 
   default:

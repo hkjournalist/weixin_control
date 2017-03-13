@@ -1,0 +1,18 @@
+<?php
+
+# 获取命令,并过滤有害代码
+$cmd = str_replace("'", "", substr(filter_input(INPUT_GET, 'cmd', FILTER_SANITIZE_SPECIAL_CHARS), 0, 20));
+
+if (strcmp($cmd, "touch") === 0 || strcmp($cmd, "rm") === 0) {
+    send_msg($cmd, 2048);
+    # 跳转回主页
+    header("Location:index.html");
+} else {
+    die("无效命令[$cmd]！");
+}
+
+function send_msg($msg, $port) {
+    $sock = socket_create(AF_INET, SOCK_DGRAM, 0);
+    socket_sendto($sock, $msg, strlen($msg), 0, "localhost", $port);
+    socket_close($sock);
+}
