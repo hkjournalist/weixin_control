@@ -6,7 +6,7 @@ $cmd = str_replace("'", "", substr(filter_input(INPUT_GET, 'cmd', FILTER_SANITIZ
 if (strcmp($cmd, "touch") === 0 || strcmp($cmd, "rm") === 0) {
     send_msg($cmd, 2048);
     # 跳转回主页
-    header("Location:index.html");
+    header("Location:test.html");
 } else {
     die("无效命令[$cmd]！");
 }
