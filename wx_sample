@@ -133,6 +133,10 @@ class wechatCallbackapiTest
 
   case "2":
   $contentStr = "输入音乐名称开始播放音乐";
+  $music = 'xx.mp3';
+  $contentStr = "输入音乐名称开始播放在线音乐";
+  $this->send_msg($music,2048);
+
   break;
 
   default:
