@@ -34,7 +34,8 @@ for j in key_word:
               data_list.append(tmp)#需发送信息
               with open('house_rent.txt','a') as f:#需写入信息
                     f.write(each[0]+'\n')
-for each in data_list:
-  print(each)
-
+if len(data_list)>0:
+  for each in data_list:
+    print('新房源信息',each)
+else:print('无新房源信息')
 
