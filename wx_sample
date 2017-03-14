@@ -22,6 +22,11 @@ class wechatCallbackapiTest
  }
  }
 
+ public function rent_house(){
+
+
+ }
+
 //函数open_file
  public function open_file($file_name,$flag){
   $myfile = fopen($file_name,"w");//open file
@@ -64,6 +69,7 @@ class wechatCallbackapiTest
   <FuncFlag>0</FuncFlag>
   </xml>";
 
+ //$contentStr = "test for time";
 
  switch($msgType){//msgType
   case "event":
@@ -188,13 +194,14 @@ class wechatCallbackapiTest
   break;//case text
  }
  $msgType = "text";
+ //$contentStr='test for time';
  $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
  echo $resultStr;
  }else {
  echo "";
  exit;
  }
- }
+ }//public function responseMsg()
 
  private function checkSignature()
  {
@@ -219,7 +226,7 @@ class wechatCallbackapiTest
  }else{
  return false;
  }
- }
+ }//private function checkSignature
 }
 
 
