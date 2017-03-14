@@ -17,7 +17,7 @@ else:
     f=open('house_rent.txt','w')
     data=[]
 
-print('data:',data)
+#print('data:',data)
 for j in key_word:
  for i in range(page):
   url = 'https://www.douban.com/group/search?start='+str(i*page_num)+\
