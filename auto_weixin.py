@@ -4,7 +4,7 @@ import requests
 import re
 import os
 
-itchat.auto_login()
+#itchat.auto_login()
 
 def search_douban():
   key_word=['仰山公园','安立路','大屯路','北苑路','亚运村']
@@ -39,6 +39,7 @@ def search_douban():
               data_list.append(tmp)#需发送信息
               with open('house_rent.txt','a') as f:#需写入信息
                     f.write(each[0]+'\n')
+
   if len(data_list)>0:
       return ('新房源信息',data_list)
   else:return ('无新房源信息')
@@ -48,10 +49,12 @@ while(True):
   hour = dt[3]
   minute = dt[4]
   second = dt[5]
-  if hour == 10 and minute == 0 and second==0:
-    out_put=search_douban()
-    name=itchat.search_friends(name='瓅瓅Lily')
-    itchat.send('%s：%s' % ('女王大人:',out_put), name[0]['UserName'])
+  #print(itchat.search_friends(name='亲爱的'))
+  if hour == 15 and minute == 0 and second==0:
+    out_put = search_douban()
+    name=itchat.search_friends(name='亲爱的')
     itchat.send(out_put, toUserName='filehelper')
+    itchat.send('%s：%s' % ('女王大人:',out_put), name[0]['UserName'])
+
     time.sleep(2)
 itchat.run()
